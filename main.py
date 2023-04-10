@@ -15,7 +15,6 @@ class Postgres:
         except(Exception, Error) as error:
             print('Ошибка при работе с PostgresSQL ', error)
 
-
     def __del__(self):
         if self.connection:
             self.cursor.close()
@@ -94,87 +93,12 @@ class Postgres:
         print(count, "Запись успешно удалена")
 
 
-def connect():
-    try:
-        connection = psycopg2.connect(user="postgres",
-                                      password='1111',
-                                      host="127.0.0.1",
-                                      port='5432')
-        connection.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
-        cursor = connection.cursor()
-        # create_table(cursor,connection)
-        # add_data(cursor, connection)
-        # update_data(cursor,connection)
-        get_table(cursor, 'mobile')
-    except(Exception, Error) as error:
-        print('Ошибка при работе с PostgresSQL ', error)
-    finally:
-        if connection:
-            cursor.close()
-            connection.close()
-            print("Соединение с базой данных закрыто")
-
-def create_db(cursor):
-        # создание базы данных
-        sql_create_db = 'create database postgres_db'
-        cursor.execute(sql_create_db)
-
-def get_db_info(cursor, connection):
-    # Распечатать сведения о PostgreSQL
-    print("Информация о сервере PostgreSQL")
-    print(connection.get_dsn_parameters(), "\n")
-    # Выполнение SQL-запроса
-    cursor.execute("SELECT version();")
-    # Получить результат
-    record = cursor.fetchone()
-    print("Вы подключены к - ", record, "\n")
-
-def create_table(cursor, connection):
-    # SQL-запрос для создания новой таблицы
-    create_table_query = '''CREATE TABLE mobile
-                             (ID INT PRIMARY KEY     NOT NULL,
-                             MODEL           TEXT    NOT NULL,
-                             PRICE         REAL); '''
-    # Выполнение команды: это создает новую таблицу
-    cursor.execute(create_table_query)
-    connection.commit()
-    print("Таблица успешно создана в PostgreSQL")
-
-def get_table(cursor, table_name):
-    # Выполнение SQL-запроса для возврата содержимого таблицы по её имени
-    get_table_request = 'SELECT * FROM '+table_name
-    cursor.execute(get_table_request)
-    record = cursor.fetchall()
-    print(record)
-
-
-def add_data(cursor, connection):
-    # Выполнение SQL-запроса для вставки данных в таблицу
-    insert_query = """ INSERT INTO mobile (ID, MODEL, PRICE) VALUES (2, 'SamsungS20+', 500)"""
-    cursor.execute(insert_query)
-    connection.commit()
-    print("1 запись успешно вставлена")
-
-def update_data(cursor, connection):
-    # Выполнение SQL-запроса для обновления таблицы
-    update_query = """Update mobile set price = 1000 where id = 1"""
-    cursor.execute(update_query)
-    connection.commit()
-    count = cursor.rowcount
-    print(count, "Запись успешно изменена")
-
-def remove_data(cursor, connection):
-    # Выполнение SQL-запроса для удаления таблицы
-    delete_query = """Delete from mobile where id = 1"""
-    cursor.execute(delete_query)
-    connection.commit()
-    count = cursor.rowcount
-    print(count, "Запись успешно удалена")
-
 def main():
     db = Postgres()
     db.update_data()
     db.get_table('mobile')
+
+
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
     main()
